@@ -1,0 +1,14 @@
+id: minimal
+name: "Minimal — Trắng đen sạch sẽ"
+tokens:
+  primary: "#111827"
+  primary_light: "#374151"
+  bg: "#FFFFFF"
+  bg_alt: "#F9FAFB"
+  text: "#111827"
+  text_muted: "#6B7280"
+  accent: "#3B82F6"
+  radius: "8px"
+  shadow: "0 2px 8px rgba(0,0,0,0.06)"
+css_extra: |
+  body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); }

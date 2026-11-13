@@ -1,0 +1,14 @@
+id: coffee_warm
+name: "Ấm cúng — Quán cà phê"
+tokens:
+  primary: "#6B4423"
+  primary_light: "#A67B5B"
+  bg: "#FAF6F0"
+  bg_alt: "#F0E6D8"
+  text: "#2D1810"
+  text_muted: "#7A5C48"
+  accent: "#C8956D"
+  radius: "12px"
+  shadow: "0 4px 20px rgba(107,68,35,0.08)"
+css_extra: |
+  body { font-family: 'Playfair Display', Georgia, serif; background: var(--bg); color: var(--text); }

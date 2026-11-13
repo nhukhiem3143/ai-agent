@@ -1,0 +1,14 @@
+id: vibrant
+name: "Trẻ trung — Gradient tím-hồng"
+tokens:
+  primary: "#8B5CF6"
+  primary_light: "#A78BFA"
+  bg: "#FFFFFF"
+  bg_alt: "#F5F3FF"
+  text: "#0F172A"
+  text_muted: "#64748B"
+  accent: "#EC4899"
+  radius: "999px"
+  shadow: "0 10px 40px rgba(139,92,246,0.25)"
+css_extra: |
+  body { font-family: 'Poppins', system-ui, sans-serif; background: var(--bg); color: var(--text); }

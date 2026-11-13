@@ -1,0 +1,14 @@
+id: tech_neon
+name: "Neon — Công nghệ"
+tokens:
+  primary: "#00F5FF"
+  primary_light: "#22D3EE"
+  bg: "#0A0E1A"
+  bg_alt: "#111827"
+  text: "#F9FAFB"
+  text_muted: "#9CA3AF"
+  accent: "#A855F7"
+  radius: "4px"
+  shadow: "0 0 20px rgba(0,245,255,0.3)"
+css_extra: |
+  body { font-family: 'Orbitron', system-ui, sans-serif; background: var(--bg); color: var(--text); }

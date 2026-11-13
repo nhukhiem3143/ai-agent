@@ -1,0 +1,16 @@
+{
+    "id": "ecommerce_basic",
+    "name": "Shop cơ bản",
+    "static_files": [
+        "docker-compose.yml",
+        "backend/Dockerfile",
+        "backend/package.json",
+        "frontend/Dockerfile",
+        "frontend/package.json"
+    ],
+    "placeholder_files": [
+        "database/init.sql",
+        "backend/src/server.js",
+        "frontend/src/App.jsx"
+    ]
+}

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: '123456'
+      MYSQL_DATABASE: 'generator_db'
+    volumes:
+      - ./be/data-service/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+    ports: ["3306:3306"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    networks: [app]
+
+  ai:
+    build: ./be/ai
+    container_name: ai_service
+    ports: ["8000:8000"]
+    environment:
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      OUTPUTS_DIR: /app/outputs
+    volumes:
+      - ./outputs:/app/outputs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks: [app]
+
+  be:
+    build: ./be/data-service
+    container_name: backend_app
+    ports: ["5000:5000"]
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: root
+      DB_PASSWORD: '123456'
+      DB_NAME: generator_db
+      AI_URL: http://ai:8000
+      JWT_SECRET: super-secret-key-change-in-prod
+      PORT: 5000
+    volumes:
+      - ./outputs:/app/outputs                       # <-- Thêm dòng này
+      - /var/run/docker.sock:/var/run/docker.sock    # <-- Thêm dòng này
+    depends_on:
+      mysql_db: { condition: service_healthy }
+      ai: { condition: service_started }
+    networks: [app]
+
+  fe:
+    build: ./fe
+    container_name: frontend_app
+    ports: ["3005:80"]                               # <-- Đổi thành 3005 để tránh lỗi trùng port Grafana
+    depends_on: [be]
+    networks: [app]
+
+volumes:
+  db_data:
+
+networks:
+  app:
+    driver: bridge
