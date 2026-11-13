@@ -62,7 +62,7 @@ ai-agent/
     │   │           ├── mandatory.yaml # Các yêu cầu bắt buộc của template
     │   │           ├── manifest.json  # Khai báo danh sách file
     │   │           └── skill_bindings.yaml
-    │   └── template/           # (Lưu ý: Thư mục này đang bị trùng lặp với be/ai/template, có thể xóa)
+
     │
     └── data-service/           # 2. API GATEWAY & DATA SERVICE (Node.js)
         ├── Dockerfile          # Cấu hình Node.js 20 + Docker CLI

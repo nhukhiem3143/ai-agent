@@ -25,6 +25,26 @@ CREATE TABLE IF NOT EXISTS runs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Seed admin / password: admin123
-INSERT INTO users (email, password_hash, full_name, role) VALUES
-('admin@gen.com', '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Admin', 'admin');
+-- Mật khẩu là: 123456 (Đã mã hóa bcrypt CHUẨN)
+INSERT IGNORE INTO users (email, password, role) VALUES 
+('admin@admin.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin');
+
+-- Bảng lưu phiên chat
+DROP TABLE IF EXISTS conversations;
+CREATE TABLE conversations (
+    id VARCHAR(36) PRIMARY KEY,
+    user_id INT, -- Thêm ID người dùng
+    status VARCHAR(20) DEFAULT 'chatting',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Bảng lưu tin nhắn
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id VARCHAR(36),
+    role ENUM('user', 'assistant') NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+);

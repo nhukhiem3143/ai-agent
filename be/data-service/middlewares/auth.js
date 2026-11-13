@@ -1,36 +1,23 @@
-const router = require('express').Router();
-const bcrypt = require('bcryptjs');
-const db = require('../db');
-const { sign, protect } = require('../middlewares/auth');
-const { ok, fail } = require('../utils/response');
+const jwt = require('jsonwebtoken');
+const SECRET = process.env.JWT_SECRET || 'super-secret-key-change-in-prod';
 
-router.post('/login', async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) return fail(res, 'Thiếu email/password');
+exports.protect = (req, res, next) => {
+  // BỎ QUA KIỂM TRA ĐỐI VỚI REQUEST OPTIONS (CORS PREFLIGHT)
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
 
-        const [rows] = await db.query(`SELECT * FROM users WHERE email=?`, [email]);
-        if (!rows.length) return fail(res, 'Sai thông tin', 401);
+  const h = req.headers.authorization;
+  if (!h || !h.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, message: 'Chưa đăng nhập' });
+  }
+  
+  try {
+    req.user = jwt.verify(h.slice(7), SECRET);
+    next();
+  } catch {
+    return res.status(401).json({ success: false, message: 'Token không hợp lệ' });
+  }
+};
 
-        const user = rows[0];
-        if (!(await bcrypt.compare(password, user.password_hash)))
-            return fail(res, 'Sai thông tin', 401);
-
-        const token = sign({ id: user.id, email: user.email, role: user.role });
-        ok(res, {
-            token,
-            user: { id: user.id, email: user.email, full_name: user.full_name, role: user.role },
-        });
-    } catch (e) { next(e); }
-});
-
-router.get('/me', protect, async (req, res, next) => {
-    try {
-        const [rows] = await db.query(
-            `SELECT id, email, full_name, role FROM users WHERE id=?`, [req.user.id]
-        );
-        ok(res, rows[0]);
-    } catch (e) { next(e); }
-});
-
-module.exports = router;
+exports.sign = (payload) => jwt.sign(payload, SECRET, { expiresIn: '7d' });

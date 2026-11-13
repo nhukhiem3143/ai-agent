@@ -46,6 +46,7 @@ services:
     volumes:
       - ./outputs:/app/outputs
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./be/ai:/app 
     networks: [app]
 
   be:

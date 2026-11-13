@@ -17,7 +17,7 @@ async def chat(system: str, user: str) -> str:
                 {"role": "user", "content": user}
             ],
             temperature=0.3,
-            max_tokens=4000
+            max_tokens=8000
         )
         return res.choices[0].message.content
     except Exception as e:

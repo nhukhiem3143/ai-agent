@@ -1,0 +1,20 @@
+CREATE DATABASE IF NOT EXISTS app_db;
+USE app_db;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) DEFAULT 'user'
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  price INT NOT NULL,
+  image TEXT,
+  description TEXT
+);
+
+INSERT IGNORE INTO users (email, password, role) VALUES 
+('admin@admin.com', '$2a$10$Xm2wXW3zR5Uv/P9wJ5X9wO5Z5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5', 'admin');

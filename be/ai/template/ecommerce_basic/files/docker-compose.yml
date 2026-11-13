@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: '123456'
+      MYSQL_DATABASE: 'app_db'
+    volumes:
+      # Mount cả 2 file: 1-Tạo bảng, 2-Chèn data mẫu
+      - ./database/init.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
+      - db_data:/var/lib/mysql
+    ports: ["3307:3306"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    ports: ["5001:5000"]
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: '123456'
+      DB_NAME: app_db
+      JWT_SECRET: 'super-secret-key'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports: ["8888:80"]
+
+volumes:
+  db_data:
