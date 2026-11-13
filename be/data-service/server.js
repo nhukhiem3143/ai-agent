@@ -26,13 +26,16 @@ app.post('/api/preview/:runId', (req, res) => {
     const { runId } = req.params;
     const workspacePath = path.join('/app/outputs', runId, 'workspace');
 
-    // Chỉnh lại lệnh một chút để đảm bảo tìm đúng cổng
-    const command = `cd ${workspacePath} && export DOCKER_BUILDKIT=0 && docker compose down && sed -i 's/[0-9]*:80/8888:80/g; s/[0-9]*:5000/5001:5000/g' docker-compose.yml && docker compose up -d --build`;
-    exec(command, (error, stdout, stderr) => {
+    // LỆNH 1: Tự động tắt và xóa các container web cũ (có tên chứa 'workspace')
+    const killOld = `docker ps -q --filter "name=workspace" | xargs -r docker stop && docker ps -aq --filter "name=workspace" | xargs -r docker rm`;
+
+    // LỆNH 2: Build và chạy web mới
+    const startNew = `cd ${workspacePath} && export DOCKER_BUILDKIT=0 && sed -i 's/[0-9]*:80/8888:80/g; s/[0-9]*:5000/5001:5000/g' docker-compose.yml && docker compose up -d --build`;
+
+    // Chạy cả 2 lệnh liên tiếp
+    exec(`${killOld} ; ${startNew}`, (error, stdout, stderr) => {
         if (error) {
-            console.error(`[LỖI EXEC]: ${error.message}`);
-            console.error(`[STDERR]: ${stderr}`);
-            // Trả thẳng lỗi thật ra ngoài trình duyệt
+            console.error(`[LỖI EXEC]: ${stderr || error.message}`);
             return res.status(500).json({ success: false, error: stderr || error.message });
         }
         res.json({ success: true, url: 'http://localhost:8888' });

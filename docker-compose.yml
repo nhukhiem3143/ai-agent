@@ -18,6 +18,24 @@ services:
       retries: 15
     networks: [app]
 
+  # ==========================================
+  # THÊM MỚI: phpMyAdmin để quản lý Database
+  # ==========================================
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    ports: ["8080:80"]
+    environment:
+      PMA_HOST: mysql_db      # Trỏ tới tên service MySQL ở trên
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: '123456'
+      UPLOAD_LIMIT: 100M      # Cho phép import file SQL lớn
+    depends_on:
+      mysql_db: { condition: service_healthy }
+    networks: [app]
+  # ==========================================
+
   ai:
     build: ./be/ai
     container_name: ai_service
@@ -43,8 +61,8 @@ services:
       JWT_SECRET: super-secret-key-change-in-prod
       PORT: 5000
     volumes:
-      - ./outputs:/app/outputs                       # <-- Thêm dòng này
-      - /var/run/docker.sock:/var/run/docker.sock    # <-- Thêm dòng này
+      - ./outputs:/app/outputs                       
+      - /var/run/docker.sock:/var/run/docker.sock    
     depends_on:
       mysql_db: { condition: service_healthy }
       ai: { condition: service_started }
@@ -53,7 +71,7 @@ services:
   fe:
     build: ./fe
     container_name: frontend_app
-    ports: ["3005:80"]                               # <-- Đổi thành 3005 để tránh lỗi trùng port Grafana
+    ports: ["3005:80"]                               
     depends_on: [be]
     networks: [app]
 

@@ -1,20 +1,23 @@
 import { useState } from 'react';
 
 export default function App() {
-  const [prompt, setPrompt] = useState('Tạo web bán cà phê');
+  const [prompt, setPrompt] = useState('Tạo web bán trà sữa');
   const [loading, setLoading] = useState(false);
   const [runId, setRunId] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState('');
   const [step, setStep] = useState('');
 
+  // Tự động lấy IP hiện tại thay vì dùng localhost
+  const host = window.location.hostname;
+
   const handleGenerate = async () => {
     setLoading(true); setError(''); setRunId(null); setPreviewUrl(null);
     setStep('AI đang sinh code (1-2 phút)...');
 
     try {
-      // Gọi sinh code
-      const res = await fetch('http://localhost:5000/api/generate', {
+      // Gọi sinh code qua IP hiện tại
+      const res = await fetch(`http://${host}:5000/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
@@ -25,14 +28,15 @@ export default function App() {
       setRunId(data.data.run_id);
       setStep('Đang build và khởi chạy Docker (Đợi 15-30s)...');
 
-      // Tự động gọi API để bật Docker
-      const previewRes = await fetch(`http://localhost:5000/api/preview/${data.data.run_id}`, {
+      // Gọi API bật Docker qua IP hiện tại
+      const previewRes = await fetch(`http://${host}:5000/api/preview/${data.data.run_id}`, {
         method: 'POST'
       });
       const previewData = await previewRes.json();
 
       if (previewData.success) {
-        setPreviewUrl(previewData.url);
+        // Tự động nhúng iframe bằng IP hiện tại
+        setPreviewUrl(`http://${host}:8888`);
         setStep('');
       } else {
         throw new Error(previewData.error);
